@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+*.local.yml
+node_modules/
+.tmp/
+.specify/
+dist/
+docs/.vitepress/cache/
+docs/.vitepress/dist/

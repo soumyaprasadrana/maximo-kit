@@ -1,0 +1,103 @@
+<div align="center">
+  <img src="docs/public/logo.svg" width="88" alt="maximo-kit" />
+  <h1>maximo-kit</h1>
+  <p>
+    <strong>A configuration copilot for IBM Maximo.</strong><br />
+    Describe a change in plain language; a coding agent inspects, designs, stages,
+    previews, and commits it through maximo-mcp-server -- with design-first guardrails.
+  </p>
+  <p>
+    <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue" />
+    <img alt="GitHub Spec Kit" src="https://img.shields.io/badge/GitHub-Spec%20Kit-181717" />
+    <img alt="IBM Maximo" src="https://img.shields.io/badge/IBM-Maximo-052FAD" />
+    <img alt="maximo-mcp-server" src="https://img.shields.io/badge/MCP-maximo--mcp--server-6E56CF" />
+  </p>
+</div>
+
+---
+
+## Overview
+
+maximo-kit is a [GitHub Spec Kit](https://github.com/github/spec-kit) extension and
+preset that turns IBM Maximo configuration into a spec-driven workflow. A developer
+states an outcome; the agent selects a **recipe**, reads evidence-backed **knowledge**,
+queries the live instance through
+[maximo-mcp-server](https://github.com/soumyaprasadrana/maximo-mcp-server) for schema,
+and drives the Working Set lifecycle:
+
+```
+inspect -> design -> plan -> stage -> preview -> approve -> commit -> verify
+```
+
+Object Structure selection is deterministic (recipe-driven, not discovery), and nothing
+is written to Maximo until a human approves both the design and the previewed diff.
+
+## Requirements
+
+- The Spec Kit CLI (`specify`)
+- [maximo-mcp-server](https://github.com/soumyaprasadrana/maximo-mcp-server) (>= 1.1.0),
+  configured for your coding agent (Claude Code, Cursor, ...)
+- An IBM Maximo instance with configuration Object Structures exposed over OSLC
+  (`mxe.oslc.validusewith`)
+
+## Install
+
+maximo-kit ships as two zips on the Releases page. The extension is self-contained --
+it carries the commands, recipes, and knowledge in one archive.
+
+```bash
+# 1. Create a Spec Kit project for your agent
+specify init my-maximo --integration claude      # or: --integration cursor
+cd my-maximo
+
+# 2. Install the extension (commands + recipes + knowledge)
+specify extension add maximo --from <EXTENSION_ZIP_URL>
+
+# 3. (optional) Install the SDD templates preset
+specify preset add maximo-kit --from <PRESET_ZIP_URL> --priority 5
+```
+
+Copy the two asset URLs from the latest entry on the Releases page
+(`maximo-kit-<version>.zip` and `maximo-kit-preset-<version>.zip`).
+
+## Usage
+
+Configure maximo-mcp-server for your agent, then start with a plain-language request:
+
+```text
+/speckit.maximo.design chg-001 Add synonym domain value WORKING12 (maps to INPRG) to WOSTATUS
+```
+
+The agent determines the domain type by querying Maximo, selects the matching recipe
+variant, and writes `design.md`. After you approve it, continue through the lifecycle:
+
+```text
+/speckit.maximo.plan -> stage -> preview -> approve -> commit -> verify
+```
+
+Every change is captured as reviewable artifacts under `maximo/changes/<id>/`.
+
+## How it works
+
+| Layer | Role |
+|-------|------|
+| **Recipes** | Map a plain-language outcome to config Object Structures, variants, and child relations |
+| **Knowledge** | Evidence-backed guidance: domains, scripting, integration, BPM, security, system, and how to drive the MCP safely |
+| **MCP** | maximo-mcp-server provides live schema, queries, and the stage / preview / commit lifecycle |
+| **Design-first** | Human approval gates on the design and the previewed diff before anything is committed |
+
+## Documentation
+
+Full documentation -- concepts, the MCP lifecycle, commands, and recipes -- is published
+at **<DOCS_SITE_URL>**.
+
+## License
+
+MIT.
+
+---
+
+<div align="center">
+  Built and maintained by
+  <a href="https://github.com/soumyaprasadrana">Soumya Prasad Rana</a>.
+</div>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="maximo-kit">
+  <defs>
+    <linearGradient id="mkbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset=".5" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="mksheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".30"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mkspark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#a5f3fc"/>
+    </linearGradient>
+    <mask id="mkhole">
+      <rect width="64" height="64" fill="#fff"/>
+      <circle cx="32" cy="32" r="9" fill="#000"/>
+    </mask>
+  </defs>
+
+  <rect width="64" height="64" rx="15" fill="url(#mkbg)"/>
+  <rect width="64" height="64" rx="15" fill="url(#mksheen)"/>
+
+  <!-- config gear: white ring + teeth, gradient shows through the core -->
+  <g fill="#f8fafc" mask="url(#mkhole)">
+    <circle cx="32" cy="32" r="13.5"/>
+    <rect x="29" y="13" width="6" height="7" rx="2"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(45 32 32)"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(90 32 32)"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(135 32 32)"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(180 32 32)"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(225 32 32)"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(270 32 32)"/>
+    <rect x="29" y="13" width="6" height="7" rx="2" transform="rotate(315 32 32)"/>
+  </g>
+
+  <!-- copilot spark at the gear core -->
+  <path d="M32 24.5 L34.2 29.8 L39.5 32 L34.2 34.2 L32 39.5 L29.8 34.2 L24.5 32 L29.8 29.8 Z" fill="url(#mkspark)"/>
+  <!-- small satellite spark -->
+  <path d="M49 12 l1.3 3.1 3.1 1.3 -3.1 1.3 -1.3 3.1 -1.3 -3.1 -3.1 -1.3 3.1 -1.3 z" fill="#fde047"/>
+</svg>
