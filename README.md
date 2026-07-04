@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/public/logo.svg" width="88" alt="maximo-kit" />
+  <img src="docs-site/docs/public/logo.svg" width="88" alt="maximo-kit" />
   <h1>maximo-kit</h1>
   <p>
     <strong>A configuration copilot for IBM Maximo.</strong><br />
@@ -35,10 +35,14 @@ is written to Maximo until a human approves both the design and the previewed di
 ## Requirements
 
 - The Spec Kit CLI (`specify`)
-- [maximo-mcp-server](https://github.com/soumyaprasadrana/maximo-mcp-server) (>= 1.1.0),
-  configured for your coding agent (Claude Code, Cursor, ...)
+- [maximo-mcp-server](https://github.com/soumyaprasadrana/maximo-mcp-server) (>= 1.1.0)
 - An IBM Maximo instance with configuration Object Structures exposed over OSLC
   (`mxe.oslc.validusewith`)
+
+> **Note:** maximo-mcp-server must be configured in your coding agent (Claude Code,
+> Cursor, ...) **manually** -- maximo-kit does not set it up for you. Follow the
+> [maximo-mcp-server](https://github.com/soumyaprasadrana/maximo-mcp-server) setup
+> instructions for your agent before installing the extension.
 
 ## Install
 
@@ -51,14 +55,15 @@ specify init my-maximo --integration claude      # or: --integration cursor
 cd my-maximo
 
 # 2. Install the extension (commands + recipes + knowledge)
-specify extension add maximo --from <EXTENSION_ZIP_URL>
+specify extension add maximo --from https://github.com/soumyaprasadrana/maximo-kit/releases/download/v0.1.0/maximo-kit-0.1.0.zip
 
 # 3. (optional) Install the SDD templates preset
-specify preset add maximo-kit --from <PRESET_ZIP_URL> --priority 5
+specify preset add maximo-kit --from https://github.com/soumyaprasadrana/maximo-kit/releases/download/v0.1.0/maximo-kit-preset-0.1.0.zip --priority 5
 ```
 
-Copy the two asset URLs from the latest entry on the Releases page
-(`maximo-kit-<version>.zip` and `maximo-kit-preset-<version>.zip`).
+Use the **release asset** URLs above (from the Releases page), not the source-code
+archive. For a newer version, swap the tag and file version (for example
+`releases/download/v0.2.0/maximo-kit-0.2.0.zip`).
 
 ## Usage
 
@@ -79,17 +84,17 @@ Every change is captured as reviewable artifacts under `maximo/changes/<id>/`.
 
 ## How it works
 
-| Layer | Role |
-|-------|------|
-| **Recipes** | Map a plain-language outcome to config Object Structures, variants, and child relations |
-| **Knowledge** | Evidence-backed guidance: domains, scripting, integration, BPM, security, system, and how to drive the MCP safely |
-| **MCP** | maximo-mcp-server provides live schema, queries, and the stage / preview / commit lifecycle |
-| **Design-first** | Human approval gates on the design and the previewed diff before anything is committed |
+| Layer            | Role                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Recipes**      | Map a plain-language outcome to config Object Structures, variants, and child relations                           |
+| **Knowledge**    | Evidence-backed guidance: domains, scripting, integration, BPM, security, system, and how to drive the MCP safely |
+| **MCP**          | maximo-mcp-server provides live schema, queries, and the stage / preview / commit lifecycle                       |
+| **Design-first** | Human approval gates on the design and the previewed diff before anything is committed                            |
 
 ## Documentation
 
 Full documentation -- concepts, the MCP lifecycle, commands, and recipes -- is published
-at **<DOCS_SITE_URL>**.
+at **https://soumyaprasadrana.github.io/maximo-kit/**.
 
 ## License
 
