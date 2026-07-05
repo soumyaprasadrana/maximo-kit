@@ -1,36 +1,50 @@
 # Design to commit
 
-maximo-kit runs every change through a design-first lifecycle with human gates:
+maximo-kit runs every change through a strict, ordered lifecycle with human gates:
 
 ```text
-design -> approve design -> plan -> stage -> preview -> approve WS -> commit -> verify
+design -> (approve design) -> plan -> stage -> preview -> (validate) -> approve -> commit -> verify
 ```
 
-## The steps
+Each step is a separate command. **Every command checks that the previous step produced
+its artifact and stops if it did not** -- you cannot skip stage, preview, or approval,
+and staging never commits. Run one command at a time.
 
-1. **design** - the agent selects the recipe/variant from `recipes/builtin/`, reads the
-   linked knowledge, queries MCP for schema, and writes `design.md` (business need,
-   Object Structures, existing state, proposed change, impact, tests, rollback).
-2. **approve design** - a human sets `design.status.yaml` to `approved`. Nothing is
-   staged before this.
-3. **plan** - the design becomes an ordered, tool-by-tool staging plan.
-4. **stage** - changes are staged in an MCP Working Set (parent fields with
-   `ws_update_field`; child rows with `ws_add_child_record` on the relation name). The
-   working-set id is recorded so later steps reuse it.
-5. **preview** - `ws_preview_changes` shows the diff, with each child row tagged
-   Add / Change / Delete, plus any non-blocking validation warnings.
-6. **approve WS** - a human reviews the preview and records an approval.
-7. **commit** - `ws_commit` writes to Maximo; on failure the set is discarded and a
-   fresh one is started.
-8. **verify** - focused queries confirm the committed state.
+## Steps, commands, and gates
+
+| Step | Command | Produces | Runs only if |
+|------|---------|----------|--------------|
+| Design | `/speckit.maximokit.design <id> <request>` | `design.md`, `design.status.yaml` (draft) | -- (entry point) |
+| Approve design | *(you edit the file)* | `design.status.yaml` = `approved` | design.md exists |
+| Plan | `/speckit.maximokit.plan <id>` | `staging-plan.md` | design approved |
+| Stage | `/speckit.maximokit.stage <id>` | `staged.json` (Working Set) | design approved + plan exists |
+| Preview | `/speckit.maximokit.preview <id>` | `preview.md` (Add/Change/Delete diff) | staged.json exists |
+| Validate (optional) | `/speckit.maximokit.validate <id>` | `validation.md` | preview exists |
+| Approve | `/speckit.maximokit.approve <id>` | `approval.record.yaml` | preview reviewed |
+| Commit | `/speckit.maximokit.commit <id>` | `commit.log` (writes to Maximo) | design approved + preview + approval all present |
+| Verify | `/speckit.maximokit.verify <id>` | `verify.md` | commit.log exists |
+
+All artifacts live under `maximo/changes/<id>/`.
+
+## How to approve the design
+
+After `design`, open `maximo/changes/<id>/design.status.yaml` and set:
+
+```yaml
+status: approved
+```
+
+Nothing is staged until the design is approved.
 
 ## Guardrails
 
-- No staging or commit until `design.status.yaml` is approved.
-- No commit without a preview and a recorded human approval.
+- No staging or commit until `design.status.yaml` is `approved`.
+- **Staging never commits**, and preview never commits -- committing is its own gated
+  step that requires a recorded approval of the reviewed preview.
+- If the staged set changes after approval, the approval is void -- re-preview and
+  re-approve.
 - Analyze recipes (`external-system-analyze`, `app-designer-analyze`) are read-only.
-- Reject staged changes any time with `ws_discard`.
+- Reject staged changes at any time with `ws_discard`.
 
-Optional: `sync-reference` refreshes `knowledge/reference/` from Maximo when the
-server-side export tools are enabled. See the [MCP lifecycle](/mcp-lifecycle) for tool
-details and footguns.
+See the [MCP lifecycle](/mcp-lifecycle) for the Working Set tools and the child-record
+footguns the commands rely on.

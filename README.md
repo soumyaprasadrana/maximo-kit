@@ -55,11 +55,15 @@ specify init my-maximo --integration claude      # or: --integration cursor
 cd my-maximo
 
 # 2. Install the extension (commands + recipes + knowledge)
-specify extension add maximo --from https://github.com/soumyaprasadrana/maximo-kit/releases/download/v0.1.0/maximo-kit-0.1.0.zip
+specify extension add maximokit --from https://github.com/soumyaprasadrana/maximo-kit/releases/download/v0.1.1/maximo-kit-0.1.1.zip
 
 # 3. (optional) Install the SDD templates preset
-specify preset add maximo-kit --from https://github.com/soumyaprasadrana/maximo-kit/releases/download/v0.1.0/maximo-kit-preset-0.1.0.zip --priority 5
+specify preset add maximo-kit --from https://github.com/soumyaprasadrana/maximo-kit/releases/download/v0.1.1/maximo-kit-preset-0.1.1.zip --priority 5
 ```
+
+> **The extension id is `maximokit`.** Install it with exactly that name
+> (`specify extension add maximokit ...`); the slash commands register as
+> `/speckit.maximokit.*`.
 
 Use the **release asset** URLs above (from the Releases page), not the source-code
 archive. For a newer version, swap the tag and file version (for example
@@ -67,20 +71,23 @@ archive. For a newer version, swap the tag and file version (for example
 
 ## Usage
 
-Configure maximo-mcp-server for your agent, then start with a plain-language request:
+Every change runs through a strict, ordered lifecycle. Each step is a command that
+checks the previous step is done, so nothing reaches Maximo without your review. Run one
+command at a time:
 
 ```text
-/speckit.maximo.design chg-001 Add synonym domain value WORKING12 (maps to INPRG) to WOSTATUS
+/speckit.maximokit.design  chg-001 <plain-language request>   # writes design.md
+#   then approve: set maximo/changes/chg-001/design.status.yaml to `approved`
+/speckit.maximokit.plan     chg-001    # writes staging-plan.md
+/speckit.maximokit.stage    chg-001    # stages in a Working Set (does not commit)
+/speckit.maximokit.preview  chg-001    # writes preview.md (Add/Change/Delete diff)
+/speckit.maximokit.approve  chg-001    # records your approval of that preview
+/speckit.maximokit.commit   chg-001    # writes to Maximo (only if approved)
+/speckit.maximokit.verify   chg-001    # confirms the change landed
 ```
 
-The agent determines the domain type by querying Maximo, selects the matching recipe
-variant, and writes `design.md`. After you approve it, continue through the lifecycle:
-
-```text
-/speckit.maximo.plan -> stage -> preview -> approve -> commit -> verify
-```
-
-Every change is captured as reviewable artifacts under `maximo/changes/<id>/`.
+Artifacts for each change are written under `maximo/changes/<id>/`. Full walkthrough:
+the [Getting started](https://soumyaprasadrana.github.io/maximo-kit/getting-started) guide.
 
 ## How it works
 
